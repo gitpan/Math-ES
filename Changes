@@ -31,5 +31,15 @@ Added LICENSE, cleaned Makefile.PL.
 Minor changes
 --------------------------------------------------------------------
 
+--------------------------------------------------------------------
+0.07
+
+Extended documentation a bit.
+
+Included minimum and maximum value arrays for the gene_deviations, 
+because in production use it often occured that single deviation 
+values climbed up to gigantical heights, that then caused problems 
+in finding new genes within the given boundaries... 
+--------------------------------------------------------------------
 
 

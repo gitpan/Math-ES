@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------
 Math::ES
-Version 0.06
+Version 0.07
 ---------------------------------------------------------------------------
 
 This package provides an object orientated Evolution
@@ -16,7 +16,7 @@ in all details use pod2latex:
 For an (working) example please see the test routines in test.pl.
 
 
-Fuerth, 02-Apr-2003
+Fuerth, 13-Apr-2003
 
 Anselm H. C. Horn
 

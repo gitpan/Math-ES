@@ -15,7 +15,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ();
 our @EXPORT_OK   = ();
 our @EXPORT      = ();
-our $VERSION     = '0.06';
+our $VERSION     = '0.07';      # Change version number in POD !
 
 # --------------------------------------------------------------------
 
@@ -47,35 +47,35 @@ sub new {
 
     # Preset with default values
     my $eso = bless {
-	'populations'  => 2,
-	'individuals'  => 5,
-	'parents'      => 2,
-	'children'     => 10,
-	'elite'        => 1,
-	'selection_scheme' => 1,
+        'populations'  => 2,
+        'individuals'  => 5,
+        'parents'      => 2,
+        'children'     => 10,
+        'elite'        => 1,
+        'selection_scheme' => 1,
 
-	'generations'      => 50,
-	'stepwidth_const'  => 1,
-	'stepwidth_var'    => 1.5,
-	'variance_mutator' => 0.5,
+        'generations'      => 50,
+        'stepwidth_const'  => 1,
+        'stepwidth_var'    => 1.5,
+        'variance_mutator' => 0.5,
 
-	'isolation'        => 25,		
-	'migrators'        => 1,
+        'isolation'        => 25,               
+        'migrators'        => 1,
 
-	'genes'            => [],
-	'gene_deviations'  => [],
-	'max_gene_values'  => [],
-	'min_gene_values'  => [],
-	'rating_function'  => '',
+        'genes'            => [],
+        'gene_deviations'  => [],
+        'max_gene_values'  => [],
+        'min_gene_values'  => [],
+        'rating_function'  => '',
 
-	'log'   => 1,
-	'debug' => 0,
+        'log'   => 1,
+        'debug' => 0,
 
-	'log_handle'   => FileHandle->new(),
-	'debug_handle' => FileHandle->new(),
+        'log_handle'   => FileHandle->new(),
+        'debug_handle' => FileHandle->new(),
 
-	'log_file'   => "$file-$count$log_suffix",
-	'debug_file' => "$file-$count$debug_suffix",
+        'log_file'   => "$file-$count$log_suffix",
+        'debug_file' => "$file-$count$debug_suffix",
     }, $obj;
 
     # Overwrite with user specific values
@@ -109,11 +109,11 @@ sub validate {
     $msg .= "<!> Number of parents must be greater than zero\n" if ($obj->{'parents'} < 1);
     $msg .= "<!> Number of children must be greater than zero\n" if ($obj->{'children'} < 1);
     $msg .= "<!> Number of children must be greater than or equal to number of individuals\n" 
-	if ($obj->{'children'} < $obj->{'individuals'});
+        if ($obj->{'children'} < $obj->{'individuals'});
     $msg .= "<!> Number of elite must be less than number of individuals\n" 
-	if ($obj->{'elite'} >= $obj->{'individuals'});
+        if ($obj->{'elite'} >= $obj->{'individuals'});
     $msg .= "<!> Selection scheme must be 1 or 2\n" if ($obj->{'selection_scheme'} != 1 and
-					     $obj->{'selection_scheme'} != 2);
+                                             $obj->{'selection_scheme'} != 2);
     $msg .= "<!> Number of generations must be greater than zero\n" if ($obj->{'generations'} < 1);
     $msg .= "<!> variance_mutator must be positive\n" if ($obj->{'variance_mutator'} < 0);
     $msg .= "<!> Number of isolation cycles must not be negative\n" if ($obj->{'isolation'} < 0);
@@ -125,31 +125,31 @@ sub validate {
     my $gmn = @{$obj->{'min_gene_values'}};
 
     $msg .= "<!> Number of gene_deviations ($ngd) must be equal to number of genes ($ng)\n" 
-	unless ($ng == $ngd);
+        unless ($ng == $ngd);
     $msg .= "<!> Number of max_gene_values ($gmx) must be equal to number of genes ($ng)\n" 
-	unless ($ng == $gmx);
+        unless ($ng == $gmx);
     $msg .= "<!> Number of min_gene_values ($gmn) must be equal to number of genes ($ng)\n" 
-	unless ($ng == $gmn);
+        unless ($ng == $gmn);
     
     for my $i (1..$ng) {
-	my $g = $obj->{'genes'}[$i-1];
-	my $max = $obj->{'max_gene_values'}[$i-1];
-	my $min = $obj->{'min_gene_values'}[$i-1];
-	$msg .= "<!> max_gene_value $i ($max) is smaller than gene $i ($g)\n" 
-	    if ($ng == $gmx and  $max < $g );
-	$msg .= "<!> min_gene_value $i ($min) is greater than gene $i ($g)\n" 
-	    if ($ng == $gmn and  $min > $g );
+        my $g = $obj->{'genes'}[$i-1];
+        my $max = $obj->{'max_gene_values'}[$i-1];
+        my $min = $obj->{'min_gene_values'}[$i-1];
+        $msg .= "<!> max_gene_value $i ($max) is smaller than gene $i ($g)\n" 
+            if ($ng == $gmx and  $max < $g );
+        $msg .= "<!> min_gene_value $i ($min) is greater than gene $i ($g)\n" 
+            if ($ng == $gmn and  $min > $g );
     }
 
     if ($obj->{'populations'} == 1) {
-	$msg .= "<!> Isolation feature cannot be used for a single population\n" 
-	    if ($obj->{'isolation'} > 0);
-	$msg .= "<!> Migration feature cannot be used for a single population\n" 
-	    if ($obj->{'migrators'} > 0);	
+        $msg .= "<!> Isolation feature cannot be used for a single population\n" 
+            if ($obj->{'isolation'} > 0);
+        $msg .= "<!> Migration feature cannot be used for a single population\n" 
+            if ($obj->{'migrators'} > 0);       
     }
 
     $msg .= "<!> Rating function is missing\n" 
-	unless (ref($obj->{'rating_function'}) =~ /CODE/);
+        unless (ref($obj->{'rating_function'}) =~ /CODE/);
 
     print "Validated\n" if ($debug);
     return ($msg);
@@ -175,40 +175,44 @@ sub start {
     my $dfh = $obj->{'debug_handle'};
     my $lfh = $obj->{'log_handle'};
     if ($debug) {
-	open ($dfh, ">".$obj->{'debug_file'});
+        open ($dfh, ">".$obj->{'debug_file'});
     }
     if ($log) {
-	open ($lfh, ">".$obj->{'log_file'});
+        open ($lfh, ">".$obj->{'log_file'});
     }
 
     # Setup
     my $npop = $obj->{'populations'};
     my @populations = ();
     for (my $i=1; $i<=$npop; $i++) {
-	print $dfh "Creating population number $i ...\n" if ($debug);
-	my $pop = Math::ES::Population->new (
-				  'individuals'    => $obj->{'individuals'},
-				  'parents'      => $obj->{'parents'},
-				  'children'     => $obj->{'children'},
-				  'elite'        => $obj->{'elite'},
-				  'selection_scheme' => $obj->{'selection_scheme'},
-				  'migrators'    => $obj->{'migrators'},
-				  
-				  'stepwidth_const' => $obj->{'stepwidth_const'},
-				  'stepwidth_var'   => $obj->{'stepwidth_var'},
-				  'variance_mutator' => $obj->{'variance_mutator'},
-				  
-				  'genes'            => [@{$obj->{'genes'}}],
-				  'gene_deviations'  => [@{$obj->{'gene_deviations'}}],
-				  'max_gene_values'  => [@{$obj->{'max_gene_values'}}],
-				  'min_gene_values'  => [@{$obj->{'min_gene_values'}}],
-				  'rating_function'  => $obj->{'rating_function'},
-				  
-				  'debug' => $obj->{'debug'},				  
-				  'debug_handle' => $obj->{'debug_handle'},    
-				  );
-	push (@populations, $pop);
-	print $dfh "done\n" if ($debug);
+        print $dfh "Creating population number $i ...\n" if ($debug);
+        my $pop = Math::ES::Population->new (
+                                  'individuals'    => $obj->{'individuals'},
+                                  'parents'      => $obj->{'parents'},
+                                  'children'     => $obj->{'children'},
+                                  'elite'        => $obj->{'elite'},
+                                  'selection_scheme' => $obj->{'selection_scheme'},
+                                  'migrators'    => $obj->{'migrators'},
+                                  
+                                  'stepwidth_const' => $obj->{'stepwidth_const'},
+                                  'stepwidth_var'   => $obj->{'stepwidth_var'},
+                                  'variance_mutator' => $obj->{'variance_mutator'},
+                                  
+                                  'genes'            => [@{$obj->{'genes'}}],
+                                  'max_gene_values'  => [@{$obj->{'max_gene_values'}}],
+                                  'min_gene_values'  => [@{$obj->{'min_gene_values'}}],
+                                  'gene_deviations'      => [@{$obj->{'gene_deviations'}}],
+                                  'max_gene_deviations'  => 
+	     ( defined($obj->{'max_gene_deviations'}) ? [@{$obj->{'max_gene_deviations'}}] : [ ] ),
+                                  'min_gene_deviations'  => 
+	     ( defined($obj->{'min_gene_deviations'}) ? [@{$obj->{'min_gene_deviations'}}] : [ ] ),
+                                  'rating_function'  => $obj->{'rating_function'},
+                                  
+                                  'debug' => $obj->{'debug'},                             
+                                  'debug_handle' => $obj->{'debug_handle'},    
+                                  );
+        push (@populations, $pop);
+        print $dfh "done\n" if ($debug);
     }
 
     $obj->{'populations_list'} = [@populations];
@@ -242,54 +246,54 @@ sub run {
     my @pop_rate_list;
     my @pop_rate_ranked;
     foreach my $pop (@populations) {
-	# Evaluate function
-	push (@pop_rate_list, $pop->rate_individuals());
+        # Evaluate function
+        push (@pop_rate_list, $pop->rate_individuals());
 
-	# Sort individuals
-	push (@pop_rate_ranked, $pop->rank_individuals());
+        # Sort individuals
+        push (@pop_rate_ranked, $pop->rank_individuals());
     }
     
 
     # --- Loop
     my $maxgn = $obj->{'generations'};
     for (my $gn = 1; $gn <= $maxgn; $gn++) {
-	
-	# This should go to log file
-	if ($log) {
-	    print $lfh ">>","-"x80,"\n";
-	    print $lfh ">>Generation $gn\n";
-	}
+        
+        # This should go to log file
+        if ($log) {
+            print $lfh ">>","-"x80,"\n";
+            print $lfh ">>Generation $gn\n";
+        }
 
-	# 3, Create children
-	foreach my $pop (@populations) {
-	    $pop->manage_children();
-	    
-	    $pop->do_selection();
+        # 3, Create children
+        foreach my $pop (@populations) {
+            $pop->manage_children();
+            
+            $pop->do_selection();
 
 
-	    if ($log) {
-		my $ra_p= $pop->rank_individuals();
-		print $lfh " Ranking list:\t";
-		foreach my $p (@$ra_p) {
-		    printf $lfh " %10.5f", $p;
-		}
-		print $lfh "\tBest genes: ",$pop->{'individuals_list'}[0]->pretty_genes;	    
-		print $lfh "\n";
-	    }
+            if ($log) {
+                my $ra_p= $pop->rank_individuals();
+                print $lfh " Ranking list:\t";
+                foreach my $p (@$ra_p) {
+                    printf $lfh " %10.5f", $p;
+                }
+                print $lfh "\tBest genes: ",$pop->{'individuals_list'}[0]->pretty_genes;            
+                print $lfh "\n";
+            }
 
-	}
+        }
 
-	# 4, Do migration
-	if ($nmig > 0 and scalar(@populations) > 1 ) {
-	    $obj->do_migration();
-	}
+        # 4, Do migration
+        if ($nmig > 0 and scalar(@populations) > 1 ) {
+            $obj->do_migration();
+        }
 
-	# Do mixing
-	if ($niso > 0 and scalar(@populations) > 1 and ($gn % $niso) == 0) {
-	    $obj->do_mixing();
-	}
+        # Do mixing
+        if ($niso > 0 and scalar(@populations) > 1 and ($gn % $niso) == 0) {
+            $obj->do_mixing();
+        }
 
-	
+        
     }
 
     return ($obj->return_best_value(), [$obj->return_best_genes()]);
@@ -308,19 +312,19 @@ sub do_migration {
     my @populations = @{$obj->{'populations_list'}};
 
     for my $i (1..$nmig) {
-	
-	my @migrators = ();
-	
-	# Fetch migrator
-	foreach my $pop (@populations) {
-	    push (@migrators, $pop->withdraw_random_individual());
-	}
-	
-	# Insert migrator (cyclic changed)
-	my $p = shift (@populations); push (@populations, $p);
-	foreach my $pop (@populations) {
-	    $pop->integrate_individual( shift(@migrators) );
-	}
+        
+        my @migrators = ();
+        
+        # Fetch migrator
+        foreach my $pop (@populations) {
+            push (@migrators, $pop->withdraw_random_individual());
+        }
+        
+        # Insert migrator (cyclic changed)
+        my $p = shift (@populations); push (@populations, $p);
+        foreach my $pop (@populations) {
+            $pop->integrate_individual( shift(@migrators) );
+        }
     }
 
     # Debug
@@ -348,10 +352,10 @@ sub do_mixing {
 
     # Empty all populations
     foreach my $pop (@populations) {
-	my $n1 = $pop->{'individuals'};
-	print $dfh "\t$n1 individuals in current pop\n" if ($debug);
-	push (@all_indy, $pop->withdraw_all_individual);
-	push (@nindy, $n1);
+        my $n1 = $pop->{'individuals'};
+        print $dfh "\t$n1 individuals in current pop\n" if ($debug);
+        push (@all_indy, $pop->withdraw_all_individual);
+        push (@nindy, $n1);
     }
 
     print $dfh "\t",scalar(@all_indy)," individuals in total\n" if ($debug);
@@ -364,18 +368,18 @@ sub do_mixing {
 
     # ... all populations ...
     foreach my $pop (@populations) {
-	my $n1 = shift(@nindy);
-	
-	# ... with randomly choosen individuals.
-	for my $i (1..$n1) {
-	    my $idx = shift(@idx);
-	    if (defined($idx) and defined($all_indy[$idx])) {
-		$pop->integrate_individual( $all_indy[$idx] );
-	    }
-	    else {
-		print $dfh "<!> Oops, we lost an individual: $i from $n1\n";
-	    }
-	}
+        my $n1 = shift(@nindy);
+        
+        # ... with randomly choosen individuals.
+        for my $i (1..$n1) {
+            my $idx = shift(@idx);
+            if (defined($idx) and defined($all_indy[$idx])) {
+                $pop->integrate_individual( $all_indy[$idx] );
+            }
+            else {
+                print $dfh "<!> Oops, we lost an individual: $i from $n1\n";
+            }
+        }
     }
 
     # Debug
@@ -397,10 +401,10 @@ sub return_best_genes {
     my @best_indys = ();
     foreach my $pop (@populations) {
 
-	# Be sure, that we have an ordered list.
-	$pop->rank_individuals(); 
-	
-	push (@best_indys, $pop->{'individuals_list'}[0]);
+        # Be sure, that we have an ordered list.
+        $pop->rank_individuals(); 
+        
+        push (@best_indys, $pop->{'individuals_list'}[0]);
     }
 
     @best_indys = sort { $a->rate() <=> $b->rate() } (@best_indys);
@@ -420,10 +424,10 @@ sub return_best_value {
     my @best_indys = ();
     foreach my $pop (@populations) {
 
-	# Be sure, that we have an ordered list.
-	$pop->rank_individuals(); 
-	
-	push (@best_indys, $pop->{'individuals_list'}[0]);
+        # Be sure, that we have an ordered list.
+        $pop->rank_individuals(); 
+        
+        push (@best_indys, $pop->{'individuals_list'}[0]);
     }
 
     @best_indys = sort { $a->rate() <=> $b->rate() } (@best_indys);
@@ -451,28 +455,28 @@ sub new {
     
     my @individuals = ();
     for (my $j=1; $j <= $nindiv; $j++) {
-	print $dfh "\tCreating individuum $j out of $nindiv ... " if ($debug);
-	# Guarantee a individual with the input genes
-	my $do_mutate = 1;
-	$do_mutate = 0 if ($j == 1); 
-	my $indi = Math::ES::Individuum->new (
-				    'pop_rate_individuals' => undef,
-				    'genes'            => [@{$obj->{'genes'}}],
-				    'gene_deviations'  => [@{$obj->{'gene_deviations'}}],
-				    'max_gene_values'  => [@{$obj->{'max_gene_values'}}],
-				    'min_gene_values'  => [@{$obj->{'min_gene_values'}}],
-				    'rating_function'  => $obj->{'rating_function'},
+        print $dfh "\tCreating individuum $j out of $nindiv ... " if ($debug);
+        # Guarantee a individual with the input genes
+        my $do_mutate = 1;
+        $do_mutate = 0 if ($j == 1); 
+        my $indi = Math::ES::Individuum->new (
+                                    'pop_rate_individuals' => undef,
+                                    'genes'            => [@{$obj->{'genes'}}],
+                                    'gene_deviations'  => [@{$obj->{'gene_deviations'}}],
+                                    'max_gene_values'  => [@{$obj->{'max_gene_values'}}],
+                                    'min_gene_values'  => [@{$obj->{'min_gene_values'}}],
+                                    'rating_function'  => $obj->{'rating_function'},
 
-				    'stepwidth_const' => $obj->{'stepwidth_const'},
-				    'stepwidth_var'   => $obj->{'stepwidth_var'},
-				    'variance_mutator' => $obj->{'variance_mutator'},
-				   
-				    'mutate'     => $do_mutate,
+                                    'stepwidth_const' => $obj->{'stepwidth_const'},
+                                    'stepwidth_var'   => $obj->{'stepwidth_var'},
+                                    'variance_mutator' => $obj->{'variance_mutator'},
+                                   
+                                    'mutate'     => $do_mutate,
 
-				    'debug' => $obj->{'debug'},				  
-				   );
-	push (@individuals, $indi);
-	print $dfh " ok\n" if ($debug);
+                                    'debug' => $obj->{'debug'},                           
+                                   );
+        push (@individuals, $indi);
+        print $dfh " ok\n" if ($debug);
     }
     $obj->{'individuals_list'} = [@individuals];
     print $dfh "  done\n" if ($debug);
@@ -500,47 +504,47 @@ sub manage_children {
     $obj->{'children_list'} = [];
 
     if ($debug) {
-	print $dfh "<D> Managing children\n";
+        print $dfh "<D> Managing children\n";
 
-	print $dfh "<D> Parents\n";
-	my $pp=0;
-	foreach my $p (@{$obj->{'individuals_list'}}) {
-	    print $dfh "Parent $pp = ",$p->pretty_genes(),"\n";
-	    $pp++;
-	}
+        print $dfh "<D> Parents\n";
+        my $pp=0;
+        foreach my $p (@{$obj->{'individuals_list'}}) {
+            print $dfh "Parent $pp = ",$p->pretty_genes(),"\n";
+            $pp++;
+        }
     }
 
     # Create children
     for my $nc (1..$nchld) {
-	my $child = Math::ES::Individuum->new();
+        my $child = Math::ES::Individuum->new();
 
-	# Determine parents
-	my @parents_idx = ();
-	my @parents_list = ();
-	for my $np (1..$npar) {
-	    my $num = random_uniform_integer(1, 0,$nindy-1);
-	    if (grep(/^$num$/, @parents_idx)) {
-		redo;
-	    } 
-	    else {
-		push (@parents_idx, $num) ;
-		push (@parents_list, $obj->{'individuals_list'}[$num]);
-	    }
-	}
+        # Determine parents
+        my @parents_idx = ();
+        my @parents_list = ();
+        for my $np (1..$npar) {
+            my $num = random_uniform_integer(1, 0,$nindy-1);
+            if (grep(/^$num$/, @parents_idx)) {
+                redo;
+            } 
+            else {
+                push (@parents_idx, $num) ;
+                push (@parents_list, $obj->{'individuals_list'}[$num]);
+            }
+        }
 
-	# Now do the origination (data copy and crossover)
-	print $dfh "<D> Parents chosen for crossover ",join(' : ',@parents_idx),"\n" if($debug);
-	$child->originate(@parents_list);
+        # Now do the origination (data copy and crossover)
+        print $dfh "<D> Parents chosen for crossover ",join(' : ',@parents_idx),"\n" if($debug);
+        $child->originate(@parents_list);
 
-	# ... mutate it ...
-	$child->mutate();
+        # ... mutate it ...
+        $child->mutate();
 
-	# ... and rate it
-	$child->rate();
+        # ... and rate it
+        $child->rate();
 
-	push (@{$obj->{'children_list'}}, $child);
+        push (@{$obj->{'children_list'}}, $child);
 
-	print $dfh "Child $nc = ",$child->pretty_genes()," >=> ",$child->rate(),"\n" if ($debug);
+        print $dfh "Child $nc = ",$child->pretty_genes()," >=> ",$child->rate(),"\n" if ($debug);
     }
 
     $obj->rank_children();
@@ -554,10 +558,10 @@ sub rate_individuals {
     my $obj = shift;
     
     unless (exists($obj->{'pop_rate_individuals'}) or defined($obj->{'pop_rate_individuals'}) ) {
-	$obj->{'pop_rate_individuals'} = 0;
-	foreach my $indy (@{$obj->{'individuals_list'}}) {
-	    $obj->{'pop_rate_individuals'} += $indy->rate();
-	}
+        $obj->{'pop_rate_individuals'} = 0;
+        foreach my $indy (@{$obj->{'individuals_list'}}) {
+            $obj->{'pop_rate_individuals'} += $indy->rate();
+        }
     }
 
     return($obj->{'pop_rate_individuals'});
@@ -575,7 +579,7 @@ sub rank_individuals {
 
     my @temp2;
     foreach my $indy (@{$obj->{'individuals_list'}}) {
-	push (@temp2, $indy->rate());
+        push (@temp2, $indy->rate());
     }
     $obj->{'ranked_rates_individuals'} = [@temp2];
     return(\@temp2);
@@ -587,10 +591,10 @@ sub rate_children {
     my $obj = shift;
     
     unless (exists($obj->{'pop_rate_children'}) or defined($obj->{'pop_rate_children'}) ) {
-	$obj->{'pop_rate_children'} = 0;
-	foreach my $indy (@{$obj->{'children_list'}}) {
-	    $obj->{'pop_rate_children'} += $indy->rate();
-	}
+        $obj->{'pop_rate_children'} = 0;
+        foreach my $indy (@{$obj->{'children_list'}}) {
+            $obj->{'pop_rate_children'} += $indy->rate();
+        }
     }
 
     return($obj->{'pop_rate_children'});
@@ -608,7 +612,7 @@ sub rank_children {
 
     my @temp2;
     foreach my $indy (@{$obj->{'children_list'}}) {
-	push (@temp2, $indy->rate());
+        push (@temp2, $indy->rate());
     }
     $obj->{'ranked_rates_children'} = [@temp2];
     return(\@temp2);
@@ -627,36 +631,36 @@ sub do_selection {
 
     # Respect the elite
     if ($elite > 0 and $elite <= $nindy ) {
-	my @temp = sort { $b->rate() <=> $a->rate() } (@{$obj->{'children_list'}}, @{$obj->{'individuals_list'}});
-	
-	for my $i (1..$elite) {
-	    push (@new_indies, $temp[$i-1]);
-	}
+        my @temp = sort { $b->rate() <=> $a->rate() } (@{$obj->{'children_list'}}, @{$obj->{'individuals_list'}});
+        
+        for my $i (1..$elite) {
+            push (@new_indies, $temp[$i-1]);
+        }
     }
 
     # Deal with the rest
     my $nrest = $nindy - $elite;
     if ($nrest > 0) {
 
-	# Selection according to scheme
-	my $scheme = $obj->{'selection_scheme'};
+        # Selection according to scheme
+        my $scheme = $obj->{'selection_scheme'};
 
-	# 1 = Select n best
-	if ($scheme == 1) {
-	    foreach my $i (1..$nrest) {
-		push (@new_indies, $obj->{'children_list'}[$i-1]);	    
-	    }
-	}
+        # 1 = Select n best
+        if ($scheme == 1) {
+            foreach my $i (1..$nrest) {
+                push (@new_indies, $obj->{'children_list'}[$i-1]);          
+            }
+        }
 
-	# 2 = Select n-1 best and one random other 
-	elsif ($scheme == 2) {
-	    foreach my $i (1..$nrest-1) {
-		push (@new_indies, $obj->{'children_list'}[$i-1]);	    
-	    }
-	    my $lastone = random_uniform_integer(0, $nrest, $nchld);
-	    push (@new_indies, $obj->{'children_list'}[$lastone-1]);	    	 
-	}
-	
+        # 2 = Select n-1 best and one random other 
+        elsif ($scheme == 2) {
+            foreach my $i (1..$nrest-1) {
+                push (@new_indies, $obj->{'children_list'}[$i-1]);          
+            }
+            my $lastone = random_uniform_integer(0, $nrest, $nchld);
+            push (@new_indies, $obj->{'children_list'}[$lastone-1]);             
+        }
+        
     }
 
     # Move to next generation
@@ -680,14 +684,14 @@ sub withdraw_random_individual {
     my @withdrawn = ();
     for my $i (1..$num) {
 
-	$nindy = $obj->{'individuals'};
-	last if ($nindy-$elite <= 0);
-	last if ($nindy == 0);
+        $nindy = $obj->{'individuals'};
+        last if ($nindy-$elite <= 0);
+        last if ($nindy == 0);
 
-	my $num = random_uniform_integer(0, $elite+1, $nindy);
+        my $num = random_uniform_integer(0, $elite+1, $nindy);
 
-	$obj->{'individuals'}--;
-	push (@withdrawn, splice(@{$obj->{'individuals_list'}},$num-1,1));
+        $obj->{'individuals'}--;
+        push (@withdrawn, splice(@{$obj->{'individuals_list'}},$num-1,1));
     }
 
     $obj->rank_individuals();
@@ -716,8 +720,8 @@ sub integrate_individual {
     my $obj = shift;
     
     foreach my $indy (@_) {
-	$obj->{'individuals'}++;
-	push (@{$obj->{'individuals_list'}}, $indy);
+        $obj->{'individuals'}++;
+        push (@{$obj->{'individuals_list'}}, $indy);
     }
 
     $obj->rank_individuals();
@@ -741,7 +745,7 @@ sub new {
     $obj->{'indy_rate'} = undef;
 
     if ($obj->{'mutate'}) {
-	$obj->mutate;
+        $obj->mutate;
     }
 
     return ($obj);
@@ -759,9 +763,9 @@ sub rate {
     #
     #  &function(@values) returns a result
     unless (defined $obj->{'indy_rate'}) {    
-	$obj->{'indy_rate'} = &{$obj->{'rating_function'}}( @{$obj->{'genes'}} );
+        $obj->{'indy_rate'} = &{$obj->{'rating_function'}}( @{$obj->{'genes'}} );
     }
-    return ($obj->{'indy_rate'});	
+    return ($obj->{'indy_rate'});       
 }
 
 
@@ -775,9 +779,22 @@ sub mutate {
     my $obj = shift;
 
     # Firstly mutate deviations
+    my $i=-1;
     foreach my $gd (@{$obj->{'gene_deviations'}}) {
-	my $rnn = random_normal(0,0, $obj->{'variance_mutator'});
-	$gd *= exp($rnn);
+        my $rnn = random_normal(0,0, $obj->{'variance_mutator'});
+        $i++;
+        my $tmp = $gd * exp($rnn);
+        if (defined($obj->{'max_gene_deviations'}[$i]) and 
+             $tmp > $obj->{'max_gene_deviations'}[$i]) {
+            $gd = $obj->{'max_gene_deviations'}[$i]; 
+        }
+        elsif (defined($obj->{'min_gene_deviations'}[$i]) and 
+                $tmp < $obj->{'min_gene_deviations'}[$i]) {
+            $gd = $obj->{'min_gene_deviations'}[$i];
+        }
+        else {
+            $gd = $tmp;
+        };
     }
 
     # Secondly mutate genes
@@ -785,17 +802,17 @@ sub mutate {
     for (my $i=0; $i<$n; $i++) {
 
       Try: {
-	  my $var = $obj->{'stepwidth_var'};
-	  my $factor = ( random_uniform() > 0.5 ? $var : 1/$var ) * $obj->{'stepwidth_const'};
-	  
-	  my $gd = $obj->{'gene_deviations'}[$i];
-	  my $rnn = random_normal(0,0,$gd);
-	  
-	  my $temp = $obj->{'genes'}[$i] + ($rnn * $factor);
-	  redo Try if ($temp > $obj->{'max_gene_values'}[$i]);
-	  redo Try if ($temp < $obj->{'min_gene_values'}[$i]);
+          my $var = $obj->{'stepwidth_var'};
+          my $factor = ( random_uniform() > 0.5 ? $var : 1/$var ) * $obj->{'stepwidth_const'};
+          
+          my $gd = $obj->{'gene_deviations'}[$i];
+          my $rnn = random_normal(0,0,$gd);
+          
+          my $temp = $obj->{'genes'}[$i] + ($rnn * $factor);
+          redo Try if ($temp > $obj->{'max_gene_values'}[$i]);
+          redo Try if ($temp < $obj->{'min_gene_values'}[$i]);
 
-	  $obj->{'genes'}[$i] = $temp;
+          $obj->{'genes'}[$i] = $temp;
       }
 
     }
@@ -821,25 +838,25 @@ sub originate {
     $obj->{'indy_rate'} = undef;
 
     my $n = @{$obj->{'genes'}};
-	
+        
     # We have more than one parent, do the crossover
     unless ($np == 1) {
 
-	# Iterate over the genes
-	for (my $i=0; $i<$n; $i++) {
-	    my $rnu = random_uniform();
-#	    print "Random Number: $rnu\n";
+        # Iterate over the genes
+        for (my $i=0; $i<$n; $i++) {
+            my $rnu = random_uniform();
+#           print "Random Number: $rnu\n";
 
-	    # Find the appropriate parent
-	    Parent: for (my $p=0; $p<$np; $p++) {
-		if ($rnu <= 1/$np*($p+1)) {
-		    $obj->{'genes'}[$i] = $parents[$p]->{'genes'}[$i];		    
-		    $obj->{'gene_deviations'}[$i] = $parents[$p]->{'gene_deviations'}[$i];		    
-		    last Parent;
-		}
-	    }
-	}
-	
+            # Find the appropriate parent
+            Parent: for (my $p=0; $p<$np; $p++) {
+                if ($rnu <= 1/$np*($p+1)) {
+                    $obj->{'genes'}[$i] = $parents[$p]->{'genes'}[$i];              
+                    $obj->{'gene_deviations'}[$i] = $parents[$p]->{'gene_deviations'}[$i];                  
+                    last Parent;
+                }
+            }
+        }
+        
     }
     return ($obj);
 }
@@ -853,18 +870,18 @@ sub copy_to {
     my $new = shift;
     
     foreach (keys (%{$obj})) { 
-	my $temp = $obj->{$_};
-	if (ref($temp) =~ 'ARRAY') {
-	    $new->{$_} = [@$temp];
-	}
-	elsif (ref($temp) =~ 'HASH') {
-	    $new->{$_} = {%$temp};	    
-	}
-	else {
-	    $new->{$_} = $temp; # Scalars and programs go here	    	    
-	}
+        my $temp = $obj->{$_};
+        if (ref($temp) =~ 'ARRAY') {
+            $new->{$_} = [@$temp];
+        }
+        elsif (ref($temp) =~ 'HASH') {
+            $new->{$_} = {%$temp};          
+        }
+        else {
+            $new->{$_} = $temp; # Scalars and programs go here              
+        }
     };
-    return ($new);	
+    return ($new);      
 }
 
 # -----------
@@ -878,8 +895,8 @@ sub pretty_genes {
 
     # Iterate over the genes
     for (my $i=0; $i<$n; $i++) {
-	$output .= sprintf("%10.6f", $obj->{'genes'}[$i]) 
-	    . ' (' . sprintf("%10.6f", $obj->{'gene_deviations'}[$i]) . ')';
+        $output .= sprintf("%10.6f", $obj->{'genes'}[$i]) 
+            . ' (' . sprintf("%10.6f", $obj->{'gene_deviations'}[$i]) . ')';
     }
     return ($output);
 }
@@ -895,7 +912,7 @@ __END__
 
 =head1 NAME
 
-Math::ES - Perl module for Evolution Strategy Optimizer
+Math::ES - Evolution Strategy Optimizer
 
 =head1 SYNOPSIS
 
@@ -908,7 +925,7 @@ Math::ES - Perl module for Evolution Strategy Optimizer
        'max_gene_values' => [ 500, 500, 500, 500],
        'min_gene_values' => [-500,-500,-500,-500],
        'rating_function' => \&function,
-		       );
+                       );
 
   my ($value1, $ra_genes1) = $es->start();   # Start the ES
   # ... doing some other things ...
@@ -1052,32 +1069,38 @@ presented together with a more detailed description of their meaning.
 
 Apart from the C<genes>, C<gene_deviations>, C<max_gene_values>,
 C<min_gene_values> and C<rating_function>, which must be supplied by
-the user, the following values are default:
+the user, the following constructor lists all attributes with their
+default values.
 
   my $es = new Math::ES (
-	'debug' => 0,
-	'log'   => 1,
+        'debug' => 0,
+        'log'   => 1,
 
-	'individuals'      => 5,
-	'parents'          => 2,
-	'children'         => 10,
-	'populations'      => 2,
-	'selection_scheme' => 1,
-	'elite'            => 1,
-	'generations'      => 50,
+        'log_file' => 'es-xx.log',               
+        'dbg_file' => 'es-xx.dbg',               
 
-	'stepwidth_const'  => 1,
-	'stepwidth_var'    => 1.5,
-	'variance_mutator' => 0.5,
-
-	'migrators'        => 1,
-	'isolation'        => 25,		
-
-	'genes'            => [],
-	'gene_deviations'  => [],
-	'max_gene_values'  => [],
-	'min_gene_values'  => [],
-	'rating_function'  => '',
+        'individuals'          => 5,
+        'parents'              => 2,
+        'children'             => 10,
+        'populations'          => 2,
+        'selection_scheme'     => 1,
+        'elite'                => 1,
+        'generations'          => 50,
+                               
+        'stepwidth_const'      => 1,
+        'stepwidth_var'        => 1.5,
+        'variance_mutator'     => 0.5,
+                               
+        'migrators'            => 1,
+        'isolation'            => 25,           
+                               
+        'genes'                => [],
+        'max_gene_values'      => [],
+        'min_gene_values'      => [],
+        'gene_deviations'      => [],
+        'max_gene_deviations'  => [],
+        'min_gene_deviations'  => [],
+        'rating_function'      => '',
                           );
 
 =over 4
@@ -1092,6 +1115,16 @@ I<es-1.dbg> for first ES object.
 If true the ES prints out the best genes and function values for each
 population and generation. The file name is I<es-1.log> for first ES
 object.
+
+=item C<log_file>
+
+The name of the log file. Unless overridden by user, this is
+automatically set to C<es-xx.log>, with C<xx> being an internal
+counter of how many ES objects have been created in total.
+
+=item C<dbg_file>
+
+The name of the debug file; follows the same idea as the log file.
 
 =item C<individuals>
 
@@ -1182,6 +1215,11 @@ Array of the variances of the parameters used for the mutation.
 
 Arrays of parameter boundaries.
 
+=item 'max_gene_deviations' and 'min_gene_deviations'
+
+Arrays of the gene deviation boundaries. Unless set, the deviations
+may increase to rather unintended heights.
+
 =back 4
 
 
@@ -1262,12 +1300,17 @@ For this software the 'Artistic License' applies. See file LICENSE in
 the Math::ES distribution for details or visit
 http://www.opensource.org/licenses/artistic-license.php .
 
-If you use this module successfully, please consider sending me an
-email.
+Cite this work in any scientific publication as
+
+ Anselm H. C. Horn, 'ES - Evolution Strategy Optimizer', Version x.xx
+  Erlangen 2003; http://www.cpan.org/authors/id/A/AH/AHCHORN/Math/ES/
+
+Please also consider sending me a short note, maybe with the
+literature reference included.
 
 =head1 VERSION
 
-Main version number is 0.06. 
+Main version number is 0.07. 
 
 $Revision: 1.25 $
 
