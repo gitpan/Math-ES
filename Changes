@@ -1,0 +1,28 @@
+Revision history for Perl extension Math::ES.
+
+0.01  Mon Mar 10 22:10:25 2003
+ 
+Initial version
+
+--------------------------------------------------------------------
+
+0.02  
+
+First version to export, basic functions seem to work properly.
+
+--------------------------------------------------------------------
+
+0.03
+
+Added POD, lots of stuff
+
+
+--------------------------------------------------------------------
+
+0.04
+
+Added basic retrieval methods, included debug and log output.
+Added a validation routine.
+Extended POD.
+
+
