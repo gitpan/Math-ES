@@ -1,10 +1,14 @@
 ---------------------------------------------------------------------------
-Math::ES
-Version 0.07
+Math::ES 
+Version 0.08
+---------------------------------------------------------------------------
+Prerequisites: Math::Random
 ---------------------------------------------------------------------------
 
+General Info:
+-------------
 This package provides an object orientated Evolution
-Strategy (ES) for function minimization. It supports mulitple
+Strategy (ES) for function minimization. It supports multiple
 populations, elitism, migration, isolation, two selection schemes and
 self-adapting step widths.
 
@@ -16,7 +20,21 @@ in all details use pod2latex:
 For an (working) example please see the test routines in test.pl.
 
 
-Fuerth, 13-Apr-2003
+Installation:
+-------------
+Use the well-known mantra
+
+ > perl Makefile.PL
+ > make
+ > make test
+ > make install
+
+(If one of the tests fail, rerun the test suite; because random numbers are
+involved, the optimization may not converge within in specified cycle number.)
+
+
+
+Fuerth, 09-Jun-2003
 
 Anselm H. C. Horn
 

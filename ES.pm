@@ -15,7 +15,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ();
 our @EXPORT_OK   = ();
 our @EXPORT      = ();
-our $VERSION     = '0.07';      # Change version number in POD !
+our $VERSION     = '0.08';      # Change version number in POD !
 
 # --------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ my $debug = 0;
 # Selection schemes:
 #  1 : n best survive
 #  2 : n-1 best survive, last choses randomly
-#  3 : GA Roulette (not implemented)
+#  3 : GA Roulette (not implemented, yet)
 #
 
 # Package variable
@@ -631,7 +631,7 @@ sub do_selection {
 
     # Respect the elite
     if ($elite > 0 and $elite <= $nindy ) {
-        my @temp = sort { $b->rate() <=> $a->rate() } (@{$obj->{'children_list'}}, @{$obj->{'individuals_list'}});
+        my @temp = sort { $a->rate() <=> $b->rate() } (@{$obj->{'children_list'}}, @{$obj->{'individuals_list'}});
         
         for my $i (1..$elite) {
             push (@new_indies, $temp[$i-1]);
@@ -943,7 +943,7 @@ Math::ES - Evolution Strategy Optimizer
 =head1 DESCRIPTION
 
 The package B<Math::ES> provides an object orientated Evolution
-Strategy (ES) for function minimization. It supports mulitple
+Strategy (ES) for function minimization. It supports multiple
 populations, elitism, migration, isolation, two selection schemes and
 self-adapting step widths.
 
@@ -1201,7 +1201,7 @@ redistributed over the populations.
 
 This must be a reference to the rating function that takes the array
 of the genes as argument and returns the function value as simple
-scalar variable.
+scalar variable. The ES will try to B<minimize> this function.
 
 =item C<genes>
 
@@ -1310,9 +1310,9 @@ literature reference included.
 
 =head1 VERSION
 
-Main version number is 0.07. 
+Main version number is 0.08. 
 
-$Revision: 1.25 $
+$Revision: 1.27 $
 
 =head1 SEE ALSO
 
