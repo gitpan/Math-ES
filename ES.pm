@@ -15,7 +15,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ();
 our @EXPORT_OK   = ();
 our @EXPORT      = ();
-our $VERSION     = '0.05';
+our $VERSION     = '0.06';
 
 # --------------------------------------------------------------------
 
@@ -1267,9 +1267,9 @@ email.
 
 =head1 VERSION
 
-Main version number is 0.05. 
+Main version number is 0.06. 
 
-$Revision: 1.24 $
+$Revision: 1.25 $
 
 =head1 SEE ALSO
 
