@@ -15,7 +15,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ();
 our @EXPORT_OK   = ();
 our @EXPORT      = ();
-our $VERSION     = '0.04';
+our $VERSION     = '0.05';
 
 # --------------------------------------------------------------------
 
@@ -1258,18 +1258,18 @@ http://www.ccc.uni-erlangen.de/clark/horn
 
 =head1 COPYRIGHT
 
-This software is free of charge for any use as long as 
-no changes to the code are made and
-it is referenced in any work with the author's name, year and version.
+For this software the 'Artistic License' applies. See file LICENSE in
+the Math::ES distribution for details or visit
+http://www.opensource.org/licenses/artistic-license.php .
 
 If you use this module successfully, please consider sending me an
 email.
 
 =head1 VERSION
 
-Main version number is 0.04. 
+Main version number is 0.05. 
 
-$Revision: 1.22 $
+$Revision: 1.24 $
 
 =head1 SEE ALSO
 
@@ -1295,6 +1295,8 @@ I<Genetic Algorithms + Data Structures = Evolution Programs>,
 =head1 NO WARRANTY
 
 There is NO WARRANTY for this software!
+
+See COPYRIGHT for details.
 
 =cut
 
